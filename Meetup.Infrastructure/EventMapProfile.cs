@@ -9,7 +9,7 @@ public class EventMapProfile : Profile
 {
 	public EventMapProfile()
 	{
-		CreateMap<Event, EventInfo>()
+		CreateMap<Event, EventEntity>()
 			.ForMember(dest => dest.Name, opt => 
 				opt.MapFrom(src => src.Name))
 			.ForMember(dest => dest.Description, opt => 
@@ -32,7 +32,7 @@ public class EventMapProfile : Profile
 					})
 					.ToList()));
 
-		CreateMap<EventInfo, Event>()
+		CreateMap<EventEntity, Event>()
 			.ForMember(dest => dest.Id, opt =>
 				opt.MapFrom(src => src.Id))
 			.ForMember(dest => dest.Name, opt =>
@@ -49,13 +49,16 @@ public class EventMapProfile : Profile
 			.ForMember(dest => dest.Place, opt =>
 				opt.MapFrom(src => src.Place.Name))
 			.ForMember(dest => dest.Plan, opt =>
-				opt.MapFrom(src => A(src.PlanSteps)));
+				opt.MapFrom(src => src.PlanSteps
+					.OrderBy(e => e.Time)
+					.ToDictionary(e => e.Time, e => e.Name)));
 	}
 
-	private static Dictionary<DateTime, string> A(IEnumerable<PlanStep> plan)
-	{
-		return plan
-			.OrderBy(e => e.Time)
-			.ToDictionary(e => e.Time, e => e.Name);
-	}
+	////A(src.PlanSteps)
+	//private static Dictionary<DateTime, string> A(IEnumerable<PlanStep> plan)
+	//{
+	//	return plan
+	//		.OrderBy(e => e.Time)
+	//		.ToDictionary(e => e.Time, e => e.Name);
+	//}
 }

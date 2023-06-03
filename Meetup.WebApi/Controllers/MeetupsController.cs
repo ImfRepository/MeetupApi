@@ -1,9 +1,12 @@
 using Meetup.Core.Domain;
 using Meetup.Infrastructure;
+using Meetup.Infrastructure.SQL;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Meetup.WebApi.Controllers
 {
+	[Authorize]
 	[ApiController]
 	[Route("[controller]")]
 	public class MeetupsController : ControllerBase
@@ -15,6 +18,7 @@ namespace Meetup.WebApi.Controllers
 			_repository = repository;
 		}
 
+		[Authorize]
 		[HttpGet]
 		public async Task<ActionResult> Get([FromQuery] int? id, CancellationToken token)
 		{
@@ -30,18 +34,21 @@ namespace Meetup.WebApi.Controllers
 			}
 		}
 
+		[Authorize(Roles = "admin")]
 		[HttpPost]
 		public async Task<IActionResult> Add([FromBody] Event meetup, CancellationToken token)
 		{
 			return await _repository.CreateAsync(meetup, token) ? Ok() : BadRequest();
 		}
 
+		[Authorize(Roles = "admin")]
 		[HttpPut]
 		public async Task<IActionResult> Update([FromBody] Event meetup, CancellationToken token)
 		{
 			return await _repository.UpdateAsync(meetup, token) ? Ok() : BadRequest();
 		}
 
+		[Authorize(Roles = "admin")]
 		[HttpDelete]
 		public async Task<bool> Delete([FromQuery] int id, CancellationToken token)
 		{

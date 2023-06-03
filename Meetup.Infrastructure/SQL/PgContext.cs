@@ -8,14 +8,14 @@ internal class PgContext : DbContext
     public PgContext(DbContextOptions<PgContext> opt) : base(opt)
     { }
 
-    public DbSet<EventInfo> Events { get; set; }
+    public DbSet<EventEntity> Events { get; set; }
     public DbSet<Place> Places { get; set; }
     public DbSet<PlanStep> PlanSteps { get; set; }
     public DbSet<Organizer> Organizers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<EventInfo>()
+        modelBuilder.Entity<EventEntity>()
             .ToTable("events")
             .Property(e => e.Id)
             .ValueGeneratedOnAdd();

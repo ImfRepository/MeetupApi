@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Meetup.Core.Domain;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace Meetup.Infrastructure.SQL;
 
@@ -18,7 +17,7 @@ internal class Repository : IEventRepository
 
 	public async Task<bool> CreateAsync(Event meetup, CancellationToken token = default)
 	{
-		EventInfo entity = _mapper.Map<EventInfo>(meetup) 
+		EventEntity entity = _mapper.Map<EventEntity>(meetup) 
 		                   ?? throw new ArgumentNullException(nameof(entity));
 
 		entity.Id = 0;
@@ -66,7 +65,7 @@ internal class Repository : IEventRepository
 
 	public async Task<bool> UpdateAsync(Event meetup, CancellationToken token = default)
 	{
-		var newOne = _mapper.Map<EventInfo>(meetup);
+		var newOne = _mapper.Map<EventEntity>(meetup);
 		var currentOne = await _pgContext.Events
 			.AsNoTracking()
 			.FirstOrDefaultAsync(e => e.Name == newOne.Name, token);
@@ -127,7 +126,7 @@ internal class Repository : IEventRepository
 	/// <param name="entity">Meetup to normalize.</param>
 	/// <param name="token"></param>
 	/// <returns></returns>
-	private async Task<EventInfo> Normalize(EventInfo entity, CancellationToken token = default)
+	private async Task<EventEntity> Normalize(EventEntity entity, CancellationToken token = default)
 	{
 		// Check for not created yet place
 		entity.Place = await FindOrCreatePlace(entity.Place, token);
@@ -139,7 +138,6 @@ internal class Repository : IEventRepository
 		entity.PlanSteps = await FindOrCreatePlanSteps(entity.PlanSteps, entity, token);
 		foreach (var step in entity.PlanSteps)
 		{
-			//step.Event = entity;
 			step.Time = step.Time.ToUniversalTime();
 		}
 
@@ -175,24 +173,7 @@ internal class Repository : IEventRepository
 		return organizer;
 	}
 
-	//private async Task<PlanStep> FindOrCreatePlanStep(PlanStep step, EventInfo meetup, 
-	//	CancellationToken token = default)
-	//{
-	//	var existingStep = await _pgContext.PlanSteps
-	//		.Where(e => e.EventId == meetup.Id)
-	//		.FirstOrDefaultAsync(e => e.Name == step.Name, token);
-
-	//	if (existingStep != null)
-	//		step = existingStep;
-	//	else
-	//	{
-	//		await _pgContext.PlanSteps.AddAsync(step, token);
-	//	}
-
-	//	return step;
-	//}
-
-	private async Task<IEnumerable<PlanStep>> FindOrCreatePlanSteps(IEnumerable<PlanStep> steps, EventInfo meetupRefTo,
+	private async Task<IEnumerable<PlanStep>> FindOrCreatePlanSteps(IEnumerable<PlanStep> steps, EventEntity meetupRefTo,
 		CancellationToken token = default)
 	{
 		steps = steps.ToList();

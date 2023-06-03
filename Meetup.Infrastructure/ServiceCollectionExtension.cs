@@ -5,7 +5,6 @@ using Meetup.Infrastructure.SQL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using EventInfo = Meetup.Infrastructure.SQL.EventInfo;
 
 namespace Meetup.Infrastructure;
 
@@ -17,7 +16,7 @@ public static class ServiceCollectionExtension
 		                            ?? throw new ArgumentNullException(nameof(pgConnectionString));
 
 		services.AddDbContext<PgContext>(opt
-			=> opt.UseNpgsql(pgConnectionString).EnableSensitiveDataLogging());
+			=> opt.UseNpgsql(pgConnectionString));
 
 		services.AddTransient<IEventRepository, Repository>();
 
