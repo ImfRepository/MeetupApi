@@ -1,34 +1,43 @@
 ﻿using AutoMapper;
 using Meetup.Core.Domain;
+using Meetup.Core.Application;
 using Microsoft.EntityFrameworkCore;
 
 namespace Meetup.Infrastructure.SQL;
 
-internal class Repository : IEventRepository
+public class EfRepository : IMeetupRepository
 {
 	private readonly PgContext _pgContext;
 	private readonly IMapper _mapper;
 
-	public Repository(PgContext pgContext, IMapper mapper)
+	public EfRepository(PgContext pgContext, IMapper mapper)
 	{
 		_pgContext = pgContext;
 		_mapper = mapper;
 	}
 
-	public async Task<bool> CreateAsync(Event meetup, CancellationToken token = default)
+	public async Task<bool> CreateAsync(MeetupView meetupView, CancellationToken token = default)
 	{
-		EventEntity entity = _mapper.Map<EventEntity>(meetup) 
-		                   ?? throw new ArgumentNullException(nameof(entity));
+		var entity = _mapper.Map<MeetupEntity>(meetupView) 
+		             ?? throw new ArgumentNullException();
 
 		entity.Id = 0;
 
-		// Check for not created yet meetup -> continue
+		// Just not overriding meetups here
 		if (await _pgContext.Events
 			    .Where(e => e.Name == entity.Name)
+			    .AsNoTracking()
 			    .AnyAsync(token))
 			return false;
 
 		entity = await Normalize(entity, token);
+
+		// For no problems with pg timestamps
+		foreach (var step in entity.PlanSteps)
+		{
+			step.Time = step.Time.ToUniversalTime();
+		}
+		entity.Time = entity.Time.ToUniversalTime();
 
 		await _pgContext.Events.AddAsync(entity, token);
 		await _pgContext.PlanSteps.AddRangeAsync(entity.PlanSteps, token);
@@ -37,38 +46,40 @@ internal class Repository : IEventRepository
 		return true;
 	}
 
-	public async Task<IEnumerable<Event>> GetAllAsync(CancellationToken token = default)
+	public async Task<IEnumerable<MeetupView>> GetAllAsync(CancellationToken token = default)
 	{
 		var sqlModels = await _pgContext.Events
 			.Include(e => e.Organizer)
 			.Include(e => e.Place)
 			.Include(e => e.PlanSteps)
+			.AsNoTracking()
 			.ToListAsync(token);
-
-		return !sqlModels.Any() ? Enumerable.Empty<Event>() 
-			: _mapper.Map<IEnumerable<Event>>(sqlModels);
+		
+		return sqlModels.Any() 
+			? _mapper.Map<IEnumerable<MeetupView>>(sqlModels) 
+			: Enumerable.Empty<MeetupView>();
 	}
 
-	public async Task<Event> GetByIdAsync(int id, CancellationToken token = default)
+	public async Task<MeetupView> GetByIdAsync(int id, CancellationToken token = default)
 	{
 		var meetup = await _pgContext.Events.Where(e => e.Id == id)
 			.Include(e => e.Organizer)
 			.Include(e => e.Place)
 			.Include(e => e.PlanSteps)
+			.AsNoTracking()
 			.FirstOrDefaultAsync(token);
 
-		if (meetup == null)
-			throw new ArgumentNullException(nameof(meetup));
-
-		return _mapper.Map<Event>(meetup);
+		return meetup == null 
+			? MeetupView.Empty 
+			: _mapper.Map<MeetupView>(meetup);
 	}
 
-	public async Task<bool> UpdateAsync(Event meetup, CancellationToken token = default)
+	public async Task<bool> UpdateAsync(MeetupView meetup, CancellationToken token = default)
 	{
-		var newOne = _mapper.Map<EventEntity>(meetup);
+		var newOne = _mapper.Map<MeetupEntity>(meetup);
 		var currentOne = await _pgContext.Events
 			.AsNoTracking()
-			.FirstOrDefaultAsync(e => e.Name == newOne.Name, token);
+			.FirstOrDefaultAsync(e => e.Id == newOne.Id, token);
 
 		if(currentOne == null)
 			return false;
@@ -78,16 +89,13 @@ internal class Repository : IEventRepository
 		
 		_pgContext.Events.Update(newOne);
 
-		
 		await _pgContext.SaveChangesAsync(token);
 		return true;
 	}
 
 	public async Task<bool> DeleteAsync(int id, CancellationToken token = default)
 	{
-		try
-		{
-			var meetup = await _pgContext.Events
+		var meetup = await _pgContext.Events
 				.Include(e => e.Organizer)
 				.Include(e => e.Place)
 				.Include(e => e.PlanSteps)
@@ -102,20 +110,19 @@ internal class Repository : IEventRepository
 			_pgContext.PlanSteps.RemoveRange(meetup.PlanSteps);
 			_pgContext.Events.Remove(meetup);
 
+			// For now deleting places and organizers if no meetups with them.
+			// Can be changed later.
 			if (_pgContext.Events.Count(e => e.PlaceId == place.Id) == 1)
 				_pgContext.Places.Remove(place);
 
 			if(_pgContext.Events.Count(e => e.OrganizerId == org.Id) == 1)
 				_pgContext.Organizers.Remove(org);
+			
+			if (token.IsCancellationRequested)
+				throw new TaskCanceledException("Task to delete meetup was canceled.");
 
 			await _pgContext.SaveChangesAsync(token);
 			return true;
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine(ex);
-			return false;
-		}
 	}
 
 	/// <summary>
@@ -123,10 +130,10 @@ internal class Repository : IEventRepository
 	///		If they aren't exist, create them.
 	///		Also change time format to utc.
 	/// </summary>
-	/// <param name="entity">Meetup to normalize.</param>
+	/// <param name="entity">MeetupView to normalize.</param>
 	/// <param name="token"></param>
 	/// <returns></returns>
-	private async Task<EventEntity> Normalize(EventEntity entity, CancellationToken token = default)
+	private async Task<MeetupEntity> Normalize(MeetupEntity entity, CancellationToken token = default)
 	{
 		// Check for not created yet place
 		entity.Place = await FindOrCreatePlace(entity.Place, token);
@@ -134,23 +141,17 @@ internal class Repository : IEventRepository
 		// Check for not created yet organizer
 		entity.Organizer = await FindOrCreateOrganizer(entity.Organizer, token);
 
-		// Always adding plan steps
-		entity.PlanSteps = await FindOrCreatePlanSteps(entity.PlanSteps, entity, token);
-		foreach (var step in entity.PlanSteps)
-		{
-			step.Time = step.Time.ToUniversalTime();
-		}
-
-		// For no problems with pg timestamps
-		entity.Time = entity.Time.ToUniversalTime();
+		// 
+		entity.PlanSteps = await FindIfExistPlanSteps(entity.PlanSteps, entity, token);
 
 		return entity;
 	}
 
 	private async Task<Place> FindOrCreatePlace(Place place, CancellationToken token = default)
 	{
-		var existingPlace = await _pgContext.Places.
-			FirstOrDefaultAsync(e => e.Name == place.Name, token);
+		var existingPlace = await _pgContext.Places
+			.AsNoTracking()
+			.FirstOrDefaultAsync(e => e.Name == place.Name, token);
 
 		if (existingPlace != null)
 			place = existingPlace;
@@ -162,8 +163,9 @@ internal class Repository : IEventRepository
 
 	private async Task<Organizer> FindOrCreateOrganizer(Organizer organizer, CancellationToken token = default)
 	{
-		var existingOrganizer = await _pgContext.Organizers.
-			FirstOrDefaultAsync(e => e.Name == organizer.Name, token);
+		var existingOrganizer = await _pgContext.Organizers
+			.AsNoTracking()
+			.FirstOrDefaultAsync(e => e.Name == organizer.Name, token);
 
 		if (existingOrganizer != null)
 			organizer = existingOrganizer;
@@ -173,36 +175,46 @@ internal class Repository : IEventRepository
 		return organizer;
 	}
 
-	private async Task<IEnumerable<PlanStep>> FindOrCreatePlanSteps(IEnumerable<PlanStep> steps, EventEntity meetupRefTo,
+	private async Task<IEnumerable<PlanStep>> FindIfExistPlanSteps(IEnumerable<PlanStep> steps, MeetupEntity meetupRefTo,
 		CancellationToken token = default)
 	{
 		steps = steps.ToList();
 
-		var steps1 = steps;
-		var existingSteps = _pgContext.PlanSteps
+		var exSteps = await _pgContext.PlanSteps
 			.Where(e => e.EventId == meetupRefTo.Id)
 			.AsNoTracking()
-			.ToList()
-			.Where(e => steps1
-				.FirstOrDefault(step => step.Name == e.Name) != null);
+			.ToListAsync(token);
 
-		var stepsToDelete = _pgContext.PlanSteps
-			.Where(e => e.EventId == meetupRefTo.Id)
-			.AsNoTracking()
-			.ToList()
-			.Where(e => steps1
-				.FirstOrDefault(step => step.Name == e.Name) == null);
+		if (!exSteps.Any())
+			return steps;
 
-		if(stepsToDelete.Any())
-			_pgContext.PlanSteps.RemoveRange(stepsToDelete);
+		// Searching for step with same name
+		foreach (var exStep in exSteps)
+		{
+			var step = steps.FirstOrDefault(s => s.Name == exStep.Name);
 
-		var newSteps = steps
-			.Where(e => existingSteps
-				.FirstOrDefault(step => step.Name == e.Name) == null);
+			if (step == null) 
+				continue;
 
-		steps = existingSteps
-			.Concat(newSteps)
-			.ToList();
+			step.Id = exStep.Id;
+			exSteps.Remove(exStep);
+		}
+		
+		// Looking for obsolete steps, that can be used.
+		// Adding id to update steps rather than add new
+		foreach (var step in steps.Where(s => s.Id == 0))
+		{
+			if(!exSteps.Any())
+				continue;
+
+			var exStep = exSteps.First();
+			step.Id = exStep.Id;
+			exSteps.Remove(exStep);
+		}
+
+		// In case we had more steps than in updated meetup
+		if(exSteps.Any())
+			_pgContext.PlanSteps.RemoveRange(exSteps);
 
 		return steps;
 	}

@@ -2,7 +2,7 @@
 
 namespace Meetup.Infrastructure.SQL;
 
-public class EventEntity
+public class MeetupEntity
 {
     [Column("event_id")]
     public int Id { get; set; }
@@ -38,7 +38,7 @@ public class Place
     [Column("place_name")]
     public string Name { get; set; }
 
-    public virtual IEnumerable<EventEntity> Events { get; set; }
+    public virtual IEnumerable<MeetupEntity> Events { get; set; }
 }
 
 public class Organizer
@@ -49,7 +49,7 @@ public class Organizer
     [Column("organizer_name")]
     public string Name { get; set; }
 
-    public virtual IEnumerable<EventEntity> Events { get; set; }
+    public virtual IEnumerable<MeetupEntity> Events { get; set; }
 }
 
 public class PlanStep
@@ -59,7 +59,7 @@ public class PlanStep
 
     [Column("event_id")]
     public int EventId { get; set; }
-    public virtual EventEntity Event { get; set; }
+    public virtual MeetupEntity Meetup { get; set; }
 
     [Column("step_time")]
     public DateTime Time { get; set; }
