@@ -44,12 +44,13 @@ Now, here is a plan how to quick start:
   }
 }
 ```
-- If u want to run unit tests, add user to Tests project.
+- if u want to run unit tests, add user to Tests project.
 - run whatever u want
 
 ### Used
-- [Mics docs](https://learn.microsoft.com/ru-ru/)
+- [Microsoft tutorials](https://learn.microsoft.com/ru-ru/)
 - [Metanit](https://metanit.com/)
+- [Postgres tutorials](https://www.postgresqltutorial.com/)
 
 ### Time spent
-Around 30.5 hours.
+Around 31 hour.
