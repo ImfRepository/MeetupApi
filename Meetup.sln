@@ -3,15 +3,26 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.6.33712.159
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meetup.WebApi", "Meetup.WebApi\Meetup.WebApi.csproj", "{BE8C9D0C-07F7-4E8A-9C72-4A7C51EED05B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meetup.WebApi", "src\Meetup.WebApi\Meetup.WebApi.csproj", "{BE8C9D0C-07F7-4E8A-9C72-4A7C51EED05B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meetup.Core.Domain", "Meetup.Core.Domain\Meetup.Core.Domain.csproj", "{3979BBFB-9FAE-4DF5-ABC6-01948570806C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meetup.Core.Domain", "src\Meetup.Core.Domain\Meetup.Core.Domain.csproj", "{3979BBFB-9FAE-4DF5-ABC6-01948570806C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meetup.Infrastructure", "Meetup.Infrastructure\Meetup.Infrastructure.csproj", "{3C3A2368-9F55-47A2-AB14-AE4FBA2029BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meetup.Infrastructure", "src\Meetup.Infrastructure\Meetup.Infrastructure.csproj", "{3C3A2368-9F55-47A2-AB14-AE4FBA2029BA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meetup.Core.Application", "Meetup.Core.Application\Meetup.Core.Application.csproj", "{F25804D7-B439-4DF6-B980-2F88494FCD5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meetup.Core.Application", "src\Meetup.Core.Application\Meetup.Core.Application.csproj", "{F25804D7-B439-4DF6-B980-2F88494FCD5D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meetup.Tests", "Meetup.Tests\Meetup.Tests.csproj", "{6219D62F-D2BA-4512-9EB1-AB1881DF5784}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Meetup.Tests", "tests\Meetup.Tests\Meetup.Tests.csproj", "{6219D62F-D2BA-4512-9EB1-AB1881DF5784}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{94806925-F63F-4C69-B2CF-2F96E3F7CC4F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{24B14171-F0A0-46B9-A937-FBD00F077FBF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Элементы решения", "Элементы решения", "{7D0B1088-08AA-4F86-83F9-FDE78A970B9C}"
+	ProjectSection(SolutionItems) = preProject
+		db.sql = db.sql
+		README.md = README.md
+		Task.pdf = Task.pdf
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,6 +53,13 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BE8C9D0C-07F7-4E8A-9C72-4A7C51EED05B} = {94806925-F63F-4C69-B2CF-2F96E3F7CC4F}
+		{3979BBFB-9FAE-4DF5-ABC6-01948570806C} = {94806925-F63F-4C69-B2CF-2F96E3F7CC4F}
+		{3C3A2368-9F55-47A2-AB14-AE4FBA2029BA} = {94806925-F63F-4C69-B2CF-2F96E3F7CC4F}
+		{F25804D7-B439-4DF6-B980-2F88494FCD5D} = {94806925-F63F-4C69-B2CF-2F96E3F7CC4F}
+		{6219D62F-D2BA-4512-9EB1-AB1881DF5784} = {24B14171-F0A0-46B9-A937-FBD00F077FBF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9DF9C767-C3EA-41CD-8373-D2474FD89B73}

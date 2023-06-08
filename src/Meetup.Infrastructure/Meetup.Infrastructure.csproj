@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Meetup.Core.Application\Meetup.Core.Application.csproj" />
     <ProjectReference Include="..\Meetup.Core.Domain\Meetup.Core.Domain.csproj" />
   </ItemGroup>
 

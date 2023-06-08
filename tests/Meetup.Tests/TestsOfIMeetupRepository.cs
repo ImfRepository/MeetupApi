@@ -1,9 +1,4 @@
-﻿using System;
-using System.Text;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-
-namespace Meetup.Tests;
+﻿namespace Meetup.Tests;
 
 public class TestsOfIMeetupRepository
 {
@@ -13,7 +8,9 @@ public class TestsOfIMeetupRepository
 			12, 0, 0)
 		.ToUniversalTime();
 
-	private static MeetupModel RandomModel =>
+	private readonly List<int> _ids = new();
+
+	private static MeetupEntity RandomEntity =>
 		new()
 		{
 			Name = RandomString(10),
@@ -40,10 +37,10 @@ public class TestsOfIMeetupRepository
 			.AddInfrastructure(config)
 			.BuildServiceProvider();
 
-		PrepareDb().Wait();
+		AsyncPreparations().Wait();
 	}
 
-	private async Task PrepareDb()
+	private async Task AsyncPreparations()
 	{
 		var repo = GetRepository();
 
@@ -54,11 +51,15 @@ public class TestsOfIMeetupRepository
 			await repo.DeleteAsync(id);
 		}
 
-		// Adding some data
+		// Sealed data adding
 		for (var i = 0; i < 5; i++)
 		{
-			await repo.CreateAsync(RandomModel);
+			await repo.CreateAsync(RandomEntity);
 		}
+
+		// Saving ids for no concurrency in tests
+		_ids.AddRange((await repo.GetAllOrEmptyAsync())
+			.Select(e => e.Id ?? 0));
 	}
 
 	private static string RandomString(uint length)
@@ -76,7 +77,6 @@ public class TestsOfIMeetupRepository
 	{
 		var repo = _services.GetService<IMeetupRepository>();
 		return repo ?? throw new NullReferenceException();
-		
 	}
 
 	[Fact]
@@ -84,12 +84,8 @@ public class TestsOfIMeetupRepository
 	{
 		var repo = GetRepository();
 
-		// Arrange
-
-		// Act
 		var meetups = await repo.GetAllOrEmptyAsync();
 
-		// Assert
 		Assert.NotEmpty(meetups);
 	}
 
@@ -98,29 +94,20 @@ public class TestsOfIMeetupRepository
 	{
 		var repo = GetRepository();
 
-		// Arrange
+		var meetup = await repo.GetByIdOrEmptyAsync(_ids[1]);
 
-		// Act
-		var id = (await repo.GetAllOrEmptyAsync()).FirstOrDefault()!.Id ?? 0;
-		var meetup = await repo.GetByIdOrEmptyAsync(id);
-
-		// Assert
-		Assert.NotEqual(meetup, MeetupModel.Empty);
+		Assert.NotEqual(meetup, MeetupEntity.Empty);
 	}
 
 	[Fact]
 	public async Task Create()
 	{
 		var repo = GetRepository();
-
-		// Arrange
 		var expCount = (await repo.GetAllOrEmptyAsync()).Count() + 1;
 
-		// Act
-		var id = await repo.CreateAsync(RandomModel);
+		var id = await repo.CreateAsync(RandomEntity);
 		var actCount = (await repo.GetAllOrEmptyAsync()).Count();
 
-		// Assert
 		Assert.Equal(expCount, actCount);
 		Assert.True(id > 0);
 	}
@@ -129,42 +116,32 @@ public class TestsOfIMeetupRepository
 	public async Task Update()
 	{
 		var repo = GetRepository();
-
-		// Arrange
 		var expCount = (await repo.GetAllOrEmptyAsync()).Count();
 
-		// Act
-		var id = (await repo.GetAllOrEmptyAsync()).FirstOrDefault()?.Id;
-		var updated = RandomModel;
-		updated.Id = id;
-		id = await repo.UpdateAsync(updated);
+		var updated = RandomEntity;
+		updated.Id = _ids[2];
+		var result = await repo.UpdateAsync(updated);
 		var actCount = (await repo.GetAllOrEmptyAsync()).Count();
-
-		// Assert
+		
 		Assert.Equal(expCount, actCount);
-		Assert.True(id > 0);
+		Assert.True(result > 0);
 	}
 
 	[Fact]
 	public async Task Delete()
 	{
 		var repo = GetRepository();
-
-		// Arrange
 		var expCount = (await repo.GetAllOrEmptyAsync()).Count() - 1;
 
-		// Act
-		var id = (await repo.GetAllOrEmptyAsync()).FirstOrDefault()?.Id ?? 0;
-		id = await repo.DeleteAsync(id);
+		var result = await repo.DeleteAsync(_ids[3]);
 		var actCount = (await repo.GetAllOrEmptyAsync()).Count();
 
-		// Assert
 		Assert.Equal(expCount, actCount);
-		Assert.True(id > 0);
+		Assert.True(result > 0);
 	}
 }
 
 internal class TestConfig
 {
-	public string PgContext { get; set; }
+	public required string PgContext { get; set; }
 }
