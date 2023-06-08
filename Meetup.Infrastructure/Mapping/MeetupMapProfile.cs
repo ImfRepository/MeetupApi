@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Meetup.Core.Domain;
-using Meetup.Infrastructure.SQL;
-using System.Numerics;
+using Meetup.Infrastructure.Data;
 
 namespace Meetup.Infrastructure.Mapping;
 
@@ -9,7 +8,7 @@ public class MeetupMapProfile : Profile
 {
     public MeetupMapProfile()
     {
-        CreateMap<MeetupView, MeetupEntity>()
+        CreateMap<MeetupModel, MeetupEntity>()
             .ForMember(dest => dest.Name, opt =>
                 opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.Description, opt =>
@@ -32,7 +31,7 @@ public class MeetupMapProfile : Profile
                     })
                     .ToList()));
 
-        CreateMap<MeetupEntity, MeetupView>()
+        CreateMap<MeetupEntity, MeetupModel>()
             .ForMember(dest => dest.Id, opt =>
                 opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Name, opt =>
@@ -53,12 +52,4 @@ public class MeetupMapProfile : Profile
                     .OrderBy(e => e.Time)
                     .ToDictionary(e => e.Time, e => e.Name)));
     }
-
-    ////A(src.PlanSteps)
-    //private static Dictionary<DateTime, string> A(IEnumerable<PlanStep> plan)
-    //{
-    //	return plan
-    //		.OrderBy(e => e.Time)
-    //		.ToDictionary(e => e.Time, e => e.Name);
-    //}
 }
