@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Meetup.Infrastructure.Data.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Meetup.Infrastructure.Data;
 
@@ -7,50 +8,47 @@ internal class PgContext : DbContext
     public PgContext(DbContextOptions<PgContext> opt) : base(opt)
     { }
 
-    public DbSet<MeetupEntity> Meetups { get; set; }
-    public DbSet<Place> Places { get; set; }
-    public DbSet<PlanStep> PlanSteps { get; set; }
-    public DbSet<Organizer> Organizers { get; set; }
+    public DbSet<MeetupDto> Meetups { get; set; }
+    public DbSet<PlaceDto> Places { get; set; }
+    public DbSet<PlanStepDto> PlanSteps { get; set; }
+    public DbSet<OrganizerDto> Organizers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<MeetupEntity>(e =>
+        modelBuilder.Entity<MeetupDto>(e =>
         {
-            e.ToTable("events")
+            e.ToTable("meetups")
                 .Property(p => p.Id)
                 .UseIdentityAlwaysColumn();
 
 		});
 
-
-        modelBuilder.Entity<Organizer>(e =>
+        modelBuilder.Entity<OrganizerDto>(e =>
         {
 	        e.Property(p => p.Id)
 		        .UseIdentityAlwaysColumn();
 
 			e.ToTable("organizers")
-				.HasMany(o => o.Events)
-				.WithOne(m => m.Organizer)
+				.HasMany(o => o.Meetups)
+				.WithOne(m => m.OrganizerDto)
 				.HasForeignKey(m => m.OrganizerId)
 				.HasPrincipalKey(o => o.Id);
 
 		});
 
-
-        modelBuilder.Entity<Place>(e =>
+        modelBuilder.Entity<PlaceDto>(e =>
         {
 			e.Property(p => p.Id)
 				.UseIdentityAlwaysColumn();
 
 			e.ToTable("places")
-				.HasMany(p => p.Events)
-				.WithOne(m => m.Place)
+				.HasMany(p => p.Meetups)
+				.WithOne(m => m.PlaceDto)
 				.HasForeignKey(m => m.PlaceId)
 				.HasPrincipalKey(p => p.Id);
 		});
 
-
-        modelBuilder.Entity<PlanStep>(e =>
+        modelBuilder.Entity<PlanStepDto>(e =>
         {
 	        e.Property(p => p.Id)
 		        .UseIdentityAlwaysColumn();

@@ -1,5 +1,5 @@
-using Meetup.Core.Application;
-using Meetup.Core.Domain;
+using Meetup.Core.Application.Interfaces;
+using Meetup.Core.Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,8 +16,10 @@ namespace Meetup.WebApi.Controllers
 			_repository = repository;
 		}
 
-		[Authorize]
-		[HttpGet]
+		[HttpGet, Authorize]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<ActionResult> Get(CancellationToken token)
 		{
 			try
@@ -34,14 +36,16 @@ namespace Meetup.WebApi.Controllers
 			}
 		}
 
-		[Authorize]
-		[HttpGet("{id:int}")]
+		[HttpGet("{id:int}"), Authorize]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<ActionResult> Get([FromRoute] int id, CancellationToken token)
 		{
 			try
 			{
 				var meetup = await _repository.GetByIdOrEmptyAsync(id, token);
-				return meetup != MeetupModel.Empty
+				return meetup != MeetupEntity.Empty
 					? Ok(meetup)
 					: NoContent();
 			}
@@ -52,13 +56,14 @@ namespace Meetup.WebApi.Controllers
 			}
 		}
 
-		[Authorize(Roles = "admin")]
-		[HttpPost]
-		public async Task<IActionResult> Add([FromBody] MeetupModel meetupModel, CancellationToken token)
+		[HttpPost, Authorize(Roles = "admin")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> Add([FromBody] MeetupEntity meetupEntity, CancellationToken token)
 		{
 			try
 			{
-				var id = await _repository.CreateAsync(meetupModel, token);
+				var id = await _repository.CreateAsync(meetupEntity, token);
 				return Ok($"Successfully created. Id = {id}");
 			}
 			catch (Exception ex)
@@ -68,15 +73,16 @@ namespace Meetup.WebApi.Controllers
 			}
 		}
 
-		[Authorize(Roles = "admin")]
-		[HttpPut]
-		public async Task<IActionResult> Update([FromBody] MeetupModel meetupModel, CancellationToken token)
+		[HttpPut, Authorize(Roles = "admin")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		public async Task<IActionResult> Update([FromBody] MeetupEntity meetupEntity, CancellationToken token)
 		{
 			try
 			{
-				return await _repository.UpdateAsync(meetupModel, token) > 0 
+				return await _repository.UpdateAsync(meetupEntity, token) > 0 
 					? Ok("Successfully changed.") 
-					: BadRequest("MeetupModel with this name is not exists.");
+					: BadRequest("MeetupEntity with this name is not exists.");
 			}
 			catch (Exception ex)
 			{
@@ -86,15 +92,16 @@ namespace Meetup.WebApi.Controllers
 
 		}
 
-		[Authorize(Roles = "admin")]
-		[HttpDelete]
+		[HttpDelete, Authorize(Roles = "admin")]
+		[ProducesResponseType(StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
 		public async Task<IActionResult> Delete([FromQuery] int id, CancellationToken token)
 		{
 			try
 			{
 				return await _repository.DeleteAsync(id, token) > 0
 					? Ok("Successfully deleted.")
-					: BadRequest("MeetupModel with this id is not exists.");
+					: BadRequest("MeetupEntity with this id is not exists.");
 			}
 			catch (Exception ex)
 			{

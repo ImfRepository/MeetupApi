@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Meetup.Core.Domain;
-using Meetup.Infrastructure.Data;
+using Meetup.Core.Domain.Entities;
+using Meetup.Infrastructure.Data.Models;
 
 namespace Meetup.Infrastructure.Mapping;
 
@@ -8,7 +8,7 @@ public class MeetupMapProfile : Profile
 {
     public MeetupMapProfile()
     {
-        CreateMap<MeetupModel, MeetupEntity>()
+        CreateMap<MeetupEntity, MeetupDto>()
             .ForMember(dest => dest.Name, opt =>
                 opt.MapFrom(src => src.Name))
             .ForMember(dest => dest.Description, opt =>
@@ -18,20 +18,20 @@ public class MeetupMapProfile : Profile
             .ForMember(dest => dest.Time, opt =>
                 opt.MapFrom(src => src.Time))
 
-            .ForMember(dest => dest.Organizer, opt =>
-                opt.MapFrom(src => new Organizer() { Name = src.Organizer }))
-            .ForMember(dest => dest.Place, opt =>
-                opt.MapFrom(src => new Place() { Name = src.Place }))
+            .ForMember(dest => dest.OrganizerDto, opt =>
+                opt.MapFrom(src => new OrganizerDto() { Name = src.Organizer }))
+            .ForMember(dest => dest.PlaceDto, opt =>
+                opt.MapFrom(src => new PlaceDto() { Name = src.Place }))
             .ForMember(dest => dest.PlanSteps, opt =>
                 opt.MapFrom(src => src.Plan
-                    .Select(step => new PlanStep()
+                    .Select(step => new PlanStepDto()
                     {
                         Time = step.Key,
                         Name = step.Value
                     })
                     .ToList()));
 
-        CreateMap<MeetupEntity, MeetupModel>()
+        CreateMap<MeetupDto, MeetupEntity>()
             .ForMember(dest => dest.Id, opt =>
                 opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Name, opt =>
@@ -44,9 +44,9 @@ public class MeetupMapProfile : Profile
                 opt.MapFrom(src => src.Time))
 
             .ForMember(dest => dest.Organizer, opt =>
-                opt.MapFrom(src => src.Organizer.Name))
+                opt.MapFrom(src => src.OrganizerDto.Name))
             .ForMember(dest => dest.Place, opt =>
-                opt.MapFrom(src => src.Place.Name))
+                opt.MapFrom(src => src.PlaceDto.Name))
             .ForMember(dest => dest.Plan, opt =>
                 opt.MapFrom(src => src.PlanSteps
                     .OrderBy(e => e.Time)
