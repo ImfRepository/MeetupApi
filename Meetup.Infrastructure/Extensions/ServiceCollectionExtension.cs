@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using Meetup.Core.Application;
-using Meetup.Infrastructure.SQL;
+using Meetup.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,6 +23,4 @@ public static class ServiceCollectionExtension
             Assembly.GetAssembly(typeof(ServiceCollectionExtension))));
         return services;
     }
-
-
 }

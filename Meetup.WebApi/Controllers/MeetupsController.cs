@@ -22,7 +22,7 @@ namespace Meetup.WebApi.Controllers
 		{
 			try
 			{
-				var meetups = await _repository.GetAllAsync(token);
+				var meetups = await _repository.GetAllOrEmptyAsync(token);
 				return meetups.Any() 
 					? Ok(meetups) 
 					: NoContent();
@@ -40,8 +40,8 @@ namespace Meetup.WebApi.Controllers
 		{
 			try
 			{
-				var meetup = await _repository.GetByIdAsync(id, token);
-				return meetup != MeetupView.Empty
+				var meetup = await _repository.GetByIdOrEmptyAsync(id, token);
+				return meetup != MeetupModel.Empty
 					? Ok(meetup)
 					: NoContent();
 			}
@@ -54,13 +54,12 @@ namespace Meetup.WebApi.Controllers
 
 		[Authorize(Roles = "admin")]
 		[HttpPost]
-		public async Task<IActionResult> Add([FromBody] MeetupView meetupView, CancellationToken token)
+		public async Task<IActionResult> Add([FromBody] MeetupModel meetupModel, CancellationToken token)
 		{
 			try
 			{
-				return await _repository.CreateAsync(meetupView, token) 
-					? Ok("Successfully created.") 
-					: BadRequest("MeetupView with this name already exists.");
+				var id = await _repository.CreateAsync(meetupModel, token);
+				return Ok($"Successfully created. Id = {id}");
 			}
 			catch (Exception ex)
 			{
@@ -71,13 +70,13 @@ namespace Meetup.WebApi.Controllers
 
 		[Authorize(Roles = "admin")]
 		[HttpPut]
-		public async Task<IActionResult> Update([FromBody] MeetupView meetupView, CancellationToken token)
+		public async Task<IActionResult> Update([FromBody] MeetupModel meetupModel, CancellationToken token)
 		{
 			try
 			{
-				return await _repository.UpdateAsync(meetupView, token) 
+				return await _repository.UpdateAsync(meetupModel, token) > 0 
 					? Ok("Successfully changed.") 
-					: BadRequest("MeetupView with this name is not exists.");
+					: BadRequest("MeetupModel with this name is not exists.");
 			}
 			catch (Exception ex)
 			{
@@ -93,9 +92,9 @@ namespace Meetup.WebApi.Controllers
 		{
 			try
 			{
-				return await _repository.DeleteAsync(id, token) 
+				return await _repository.DeleteAsync(id, token) > 0
 					? Ok("Successfully deleted.")
-					: BadRequest("MeetupView with this id is not exists.");
+					: BadRequest("MeetupModel with this id is not exists.");
 			}
 			catch (Exception ex)
 			{

@@ -1,6 +1,6 @@
 ﻿namespace Meetup.Core.Domain;
 
-public class MeetupView
+public class MeetupModel
 {
 	public int? Id { get; set; }
 
@@ -14,7 +14,7 @@ public class MeetupView
 	public DateTime Time { get; set; }
 	public string Place { get; set; }
 
-	public static readonly MeetupView Empty = new()
+	public static readonly MeetupModel Empty = new()
 	{
 		Id = null,
 		Name = string.Empty,

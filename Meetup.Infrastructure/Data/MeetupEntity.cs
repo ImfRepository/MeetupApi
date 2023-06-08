@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Meetup.Infrastructure.SQL;
+namespace Meetup.Infrastructure.Data;
 
 public class MeetupEntity
 {
@@ -43,7 +44,7 @@ public class Place
 
 public class Organizer
 {
-    [Column("organizer_id")]
+	[Column("organizer_id")]
     public int Id { get; set; }
 
     [Column("organizer_name")]
@@ -58,7 +59,7 @@ public class PlanStep
     public int Id { get; set; }
 
     [Column("event_id")]
-    public int EventId { get; set; }
+    public int MeetupId { get; set; }
     public virtual MeetupEntity Meetup { get; set; }
 
     [Column("step_time")]
