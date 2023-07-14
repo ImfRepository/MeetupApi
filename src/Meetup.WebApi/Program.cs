@@ -2,6 +2,7 @@ using Meetup.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using FluentValidation;
 using Microsoft.OpenApi.Models;
 
 try
@@ -12,6 +13,7 @@ try
 
 	// Add services to the container.
 	builder.Services.AddInfrastructure(config);
+	builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 	builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,opt =>

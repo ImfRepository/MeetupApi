@@ -1,114 +1,161 @@
+using FluentValidation;
 using Meetup.Core.Application.Interfaces;
-using Meetup.Core.Domain.Entities;
+using Meetup.Core.Domain.Exceptions;
+using Meetup.Core.Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Meetup.WebApi.Controllers
+namespace Meetup.WebApi.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class MeetupController : ControllerBase
 {
-	[ApiController]
-	[Route("[controller]")]
-	public class MeetupController : ControllerBase
+	private readonly IMeetupRepository _repository;
+	private readonly IValidator<MeetupModel> _validator;
+	private const string InvalidIdMsg = "Id must be more than 0.";
+
+	public MeetupController(IMeetupRepository repository, IValidator<MeetupModel> validator)
 	{
-		private readonly IMeetupRepository _repository;
+		_repository = repository;
+		_validator = validator;
+	}
 
-		public MeetupController(IMeetupRepository repository)
+	[HttpGet]
+	[Authorize]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+	public async Task<IActionResult> Get(CancellationToken token)
+	{
+		try
 		{
-			_repository = repository;
+			var result = await _repository.GetAllOrEmptyAsync(token);
+			return result.Match<IActionResult>(Ok, exception =>
+			{
+				if (exception is RepositoryException)
+					return BadRequest(exception.Message);
+
+				return StatusCode(500);
+			});
 		}
-
-		[HttpGet, Authorize]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status204NoContent)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult> Get(CancellationToken token)
+		catch (Exception ex)
 		{
-			try
-			{
-				var meetups = await _repository.GetAllOrEmptyAsync(token);
-				return meetups.Any() 
-					? Ok(meetups) 
-					: NoContent();
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-				return BadRequest("Failed to handle request. Try again later.");
-			}
+			Console.WriteLine(ex);
+			return StatusCode(500);
 		}
+	}
 
-		[HttpGet("{id:int}"), Authorize]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status204NoContent)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<ActionResult> Get([FromRoute] int id, CancellationToken token)
+	[HttpGet("{id:int}")]
+	[Authorize]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+	public async Task<IActionResult> Get([FromRoute] int id, CancellationToken token)
+	{
+		try
 		{
-			try
+			if (id <= 0) return BadRequest(InvalidIdMsg);
+
+			var result = await _repository.GetByIdOrEmptyAsync(id, token);
+			return result.Match<IActionResult>(Ok, exception =>
 			{
-				var meetup = await _repository.GetByIdOrEmptyAsync(id, token);
-				return meetup != MeetupEntity.Empty
-					? Ok(meetup)
-					: NoContent();
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-				return BadRequest("Failed to handle request. Try again later.");
-			}
+				if (exception is RepositoryException)
+					return BadRequest(exception.Message);
+
+				return StatusCode(500);
+			});
 		}
-
-		[HttpPost, Authorize(Roles = "admin")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> Add([FromBody] MeetupEntity meetupEntity, CancellationToken token)
+		catch (Exception ex)
 		{
-			try
-			{
-				var id = await _repository.CreateAsync(meetupEntity, token);
-				return Ok($"Successfully created. Id = {id}");
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-				return BadRequest("Failed to handle request. Try again later.");
-			}
+			Console.WriteLine(ex);
+			return StatusCode(500);
 		}
+	}
 
-		[HttpPut, Authorize(Roles = "admin")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> Update([FromBody] MeetupEntity meetupEntity, CancellationToken token)
+	[HttpPost]
+	[Authorize(Roles = "admin")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+	public async Task<IActionResult> Add([FromBody] MeetupModel meetupModel, CancellationToken token)
+	{
+		try
 		{
-			try
+			var validationResult = await _validator.ValidateAsync(meetupModel, token);
+			if (!validationResult.IsValid) 
+				return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+
+			var result = await _repository.CreateAsync(meetupModel, token);
+			return result.Match<IActionResult>(b => Ok(b), exception =>
 			{
-				return await _repository.UpdateAsync(meetupEntity, token) > 0 
-					? Ok("Successfully changed.") 
-					: BadRequest("MeetupEntity with this name is not exists.");
-			}
-			catch (Exception ex)
+				if (exception is RepositoryException)
+					return BadRequest(exception.Message);
+
+				return StatusCode(500);
+			});
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex);
+			return StatusCode(500);
+		}
+	}
+
+	[HttpPut]
+	[Authorize(Roles = "admin")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+	public async Task<IActionResult> Update([FromBody] MeetupModel meetupModel, CancellationToken token)
+	{
+		try
+		{
+			var validationResult = await _validator.ValidateAsync(meetupModel, token);
+			if (!validationResult.IsValid) 
+				return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
+
+			var result = await _repository.UpdateAsync(meetupModel, token);
+			return result.Match<IActionResult>(b => Ok(), exception =>
 			{
-				Console.WriteLine(ex);
-				return BadRequest("Failed to handle request. Try again later.");
-			}
+				if (exception is RepositoryException)
+					return BadRequest(exception.Message);
+
+				return StatusCode(500);
+			});
 
 		}
-
-		[HttpDelete, Authorize(Roles = "admin")]
-		[ProducesResponseType(StatusCodes.Status200OK)]
-		[ProducesResponseType(StatusCodes.Status400BadRequest)]
-		public async Task<IActionResult> Delete([FromQuery] int id, CancellationToken token)
+		catch (Exception ex)
 		{
-			try
-			{
-				return await _repository.DeleteAsync(id, token) > 0
-					? Ok("Successfully deleted.")
-					: BadRequest("MeetupEntity with this id is not exists.");
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-				return BadRequest("Failed to handle request. Try again later.");
-			}
+			Console.WriteLine(ex);
+			return StatusCode(500);
+		}
+	}
 
+	[HttpDelete]
+	[Authorize(Roles = "admin")]
+	[ProducesResponseType(StatusCodes.Status200OK)]
+	[ProducesResponseType(StatusCodes.Status400BadRequest)]
+	[ProducesResponseType(StatusCodes.Status500InternalServerError)]
+	public async Task<IActionResult> Delete([FromQuery] int id, CancellationToken token)
+	{
+		try
+		{
+			if (id <= 0) return BadRequest(InvalidIdMsg);
+
+			var result = await _repository.DeleteAsync(id, token);
+			return result.Match<IActionResult>(b => Ok(), exception =>
+			{
+				if (exception is RepositoryException)
+					return BadRequest(exception.Message);
+
+				return StatusCode(500);
+			});
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex);
+			return StatusCode(500);
 		}
 	}
 }
