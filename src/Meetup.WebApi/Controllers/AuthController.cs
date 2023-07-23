@@ -1,9 +1,9 @@
-﻿using Meetup.Core.Application.Interfaces;
+﻿using Meetup.Core.Application.Common.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Meetup.WebApi.Controllers
 {
-	[Route("api/[controller]")]
+    [Route("api/[controller]")]
 	[ApiController]
 	public class AuthController : ControllerBase
 	{

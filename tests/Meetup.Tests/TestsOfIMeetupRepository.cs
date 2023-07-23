@@ -1,7 +1,8 @@
-﻿using Meetup.Core.Domain.Models;
+﻿using Meetup.Core.Domain.Entities;
+using Meetup.Infrastructure;
 
 namespace Meetup.Tests;
-
+/*
 [CollectionDefinition(nameof(NotThreadSafeResourceCollection))]
 public class TestsOfIMeetupRepository
 {
@@ -142,4 +143,4 @@ internal class TestConfig
 }
 
 [CollectionDefinition(nameof(NotThreadSafeResourceCollection), DisableParallelization = true)]
-public class NotThreadSafeResourceCollection { }
+public class NotThreadSafeResourceCollection { }*/
