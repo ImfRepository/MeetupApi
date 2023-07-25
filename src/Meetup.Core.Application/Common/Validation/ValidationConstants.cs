@@ -1,4 +1,4 @@
-﻿namespace Meetup.Core.Application.Data;
+﻿namespace Meetup.Core.Application.Common.Validation;
 
 public static class ValidationConstants
 {

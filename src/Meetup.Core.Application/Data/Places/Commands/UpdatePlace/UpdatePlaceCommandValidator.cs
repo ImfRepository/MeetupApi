@@ -1,4 +1,4 @@
-﻿using static Meetup.Core.Application.Data.ValidationConstants;
+﻿using static Meetup.Core.Application.Common.Validation.ValidationConstants;
 
 namespace Meetup.Core.Application.Data.Places.Commands.UpdatePlace;
 

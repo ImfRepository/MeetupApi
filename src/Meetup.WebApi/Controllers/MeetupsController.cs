@@ -27,7 +27,7 @@ public class MeetupController : ControllerBase
 	{
 		var response = await _mediator.Send(new GetAllMeetupsQuery(), cancellationToken);
 
-		return Ok(response.ToResponseDto());
+		return response.ToActionResult();
 	}
 
 	[HttpGet("{id:int}")]
@@ -36,7 +36,7 @@ public class MeetupController : ControllerBase
 	{
 		var response = await _mediator.Send(new GetMeetupByIdQuery(id), cancellationToken);
 
-		return Ok(response.ToResponseDto());
+		return response.ToActionResult();
 	}
 
 	[HttpPost]
@@ -45,7 +45,7 @@ public class MeetupController : ControllerBase
 	{
 		var response = await _mediator.Send(command, cancellationToken);
 
-		return Ok(response.ToResponseDto());
+		return response.ToActionResult();
 	}
 
 	[HttpPut]
@@ -55,7 +55,7 @@ public class MeetupController : ControllerBase
 	{
 		var response = await _mediator.Send(command, cancellationToken);
 
-		return Ok(response.ToResponseDto());
+		return response.ToActionResult();
 	}
 
 	[HttpDelete]
@@ -64,6 +64,6 @@ public class MeetupController : ControllerBase
 	{
 		var response = await _mediator.Send(new DeleteMeetupCommand(id), cancellationToken);
 
-		return Ok(response.ToResponseDto());
+		return response.ToActionResult();
 	}
 }

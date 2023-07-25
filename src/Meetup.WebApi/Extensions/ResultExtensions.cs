@@ -1,71 +1,102 @@
 ﻿using FluentResults;
+using Meetup.Core.Application.Common.Extensions;
 using Meetup.Core.Domain.Errors;
 using Meetup.WebApi.Controllers;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Meetup.WebApi.Extensions;
 
 public static class ResultExtensions
 {
-	public static ResponseDto<T> ToResponseDto<T>(this Result<T> result)
+	public static IActionResult ToActionResult<T>(this Result<T> result)
 	{
-		var response = new ResponseDto<T>();
-
 		if (result.IsSuccess)
 		{
-			response.Status = "Ok";
-			response.Value = result.ValueOrDefault;
-			return response;
+			return SuccessValuedResult(result);
 		}
 
-		if (result.Errors.Any(e => e is ValidationError))
-		{
-			response.Status = "Invalid";
-			response.Errors = result.Errors
-				.Where(e => e is ValidationError)
-				.Select(e => e.Message)
-				.ToList();
+		var failedResult = new Result()
+			.WithErrors(result.Errors);
 
-			return response;
-		}
-
-		response.Status = "Error";
-		response.Errors = result.Errors
-			.Where(e => e is not ExceptionalError)
-			.Select(e => e.Message)
-			.ToList();
-
-		return response;
+		return failedResult.ToActionResult();
 	}
 
-	public static ResponseDto<bool> ToResponseDto(this Result result)
+	public static IActionResult ToActionResult(this Result result)
 	{
-		var response = new ResponseDto<bool>();
-
 		if (result.IsSuccess)
 		{
-			response.Status = "Ok";
-			return response;
+			return SuccessResult();
 		}
 
-		if (result.Errors.Any(e => e is ValidationError))
+		if (result.IsInvalid())
 		{
-			response.Status = "Invalid";
-			response.Errors = result.Errors
-				.Where(e => e is ValidationError)
-				.Select(e => e.Message)
-				.ToList();
-
-			return response;
+			return InvalidResult(result);
 		}
 
-		response.Status = "Error";
-		response.Errors = result.Errors
-			.Where(e => e is not ExceptionalError)
-			.Select(e => e.Message)
-			.ToList();
+		if (result.IsExceptional())
+		{
+			return InternalErrorResult();
+		}
 
-		return response;
+		return ErrorResult(result);
 	}
 
+	private static IActionResult SuccessValuedResult<T>(IResult<T> result)
+	{
+		var response = new ValuedResponseDto<T>()
+		{
+			Status = "Success",
+			Value = result.ValueOrDefault
+		};
 
+		return new OkObjectResult(response);
+	}
+
+	private static IActionResult SuccessResult()
+	{
+		var response = new ResponseDto
+		{
+			Status = "Success"
+		};
+
+		return new OkObjectResult(response);
+	}
+
+	private static IActionResult InvalidResult(IResultBase result)
+	{
+		var response = new ResponseDto()
+		{
+			Status = "Invalid",
+			Errors = result.Errors
+				.Where(e => e is ValidationError)
+				.Select(e => e.Message)
+				.ToList()
+		};
+
+		return new OkObjectResult(response);
+	}
+
+	private static IActionResult InternalErrorResult()
+	{
+		var response = new ResponseDto()
+		{
+			Status = "Internal error"
+		};
+
+		return new OkObjectResult(response);
+	}
+
+	private static IActionResult ErrorResult(IResultBase result)
+	{
+		var response = new ResponseDto()
+		{
+			Status = "Error",
+			Errors = result.Errors
+				.Where(e => e is not ExceptionalError)
+				.Select(e => e.Message)
+				.ToList()
+		};
+
+		return new OkObjectResult(response);
+	}
 }

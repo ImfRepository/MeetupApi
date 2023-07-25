@@ -19,4 +19,8 @@
     <ProjectReference Include="..\Meetup.Core.Domain\Meetup.Core.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Common\Extensions\" />
+  </ItemGroup>
+
 </Project>

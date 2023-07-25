@@ -2,9 +2,8 @@
 using Meetup.Infrastructure;
 
 namespace Meetup.Tests;
-/*
-[CollectionDefinition(nameof(NotThreadSafeResourceCollection))]
-public class TestsOfIMeetupRepository
+
+/*public class TestsOfIMeetupRepository
 {
 	private static readonly Random Random = new();
 
@@ -141,6 +140,4 @@ internal class TestConfig
 {
 	public required string PgContext { get; set; }
 }
-
-[CollectionDefinition(nameof(NotThreadSafeResourceCollection), DisableParallelization = true)]
-public class NotThreadSafeResourceCollection { }*/
+*/
