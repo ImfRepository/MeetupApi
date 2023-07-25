@@ -2,10 +2,7 @@
 
 namespace Meetup.Core.Application.Data.Organizer.Commands.DeleteOrganizer;
 
-public record DeleteOrganizerCommand : IRequest<Result>
-{
-    public int Id { get; init; }
-}
+public record DeleteOrganizerCommand(int Id) : IRequest<Result>;
 
 public class DeleteOrganizerCommandHandler : IRequestHandler<DeleteOrganizerCommand, Result>
 {

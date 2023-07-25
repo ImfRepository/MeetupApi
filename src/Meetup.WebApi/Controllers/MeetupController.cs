@@ -1,12 +1,12 @@
 using MediatR;
+using Meetup.Core.Application.Data.Meetups.Commands.CreateMeetup;
 using Meetup.Core.Application.Data.Meetups.Commands.DeleteMeetup;
+using Meetup.Core.Application.Data.Meetups.Commands.UpdateMeetup;
 using Meetup.Core.Application.Data.Meetups.Queries.GetAllMeetups;
 using Meetup.Core.Application.Data.Meetups.Queries.GetMeetupById;
+using Meetup.WebApi.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Meetup.WebApi.Extensions;
-using Meetup.Core.Application.Data.Meetups.Commands.CreateMeetup;
-using Meetup.Core.Application.Data.Meetups.Commands.UpdateMeetup;
 
 namespace Meetup.WebApi.Controllers;
 
@@ -14,7 +14,7 @@ namespace Meetup.WebApi.Controllers;
 [Route("[controller]")]
 public class MeetupController : ControllerBase
 {
-	private readonly IMediator _mediator; 
+	private readonly IMediator _mediator;
 
 	public MeetupController(IMediator mediator)
 	{
@@ -50,7 +50,6 @@ public class MeetupController : ControllerBase
 
 	[HttpPut]
 	[Authorize(Roles = "admin")]
-
 	public async Task<IActionResult> Update([FromBody] UpdateMeetupCommand command, CancellationToken cancellationToken)
 	{
 		var response = await _mediator.Send(command, cancellationToken);

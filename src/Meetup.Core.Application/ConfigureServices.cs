@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Globalization;
+using System.Reflection;
 using Meetup.Core.Application.Common.Behaviors;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,7 @@ public static class ConfigureServices
 	{
 		var assembly = Assembly.GetExecutingAssembly();
 		services.AddValidatorsFromAssembly(assembly);
+		ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");
 
 		services.AddMediatR(cfg =>
 		{
