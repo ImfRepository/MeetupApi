@@ -26,6 +26,8 @@ public class PlanStepRequestsTest
 
 		_mediator = provider.GetService<IMediator>()
 		            ?? throw new NullReferenceException();
+
+		InitializeDb().Wait();
 	}
 
 	[Fact]
@@ -102,5 +104,17 @@ public class PlanStepRequestsTest
 			.PlanSteps
 			.FirstOrDefault()!
 			.Id;
+	}
+
+	private async Task InitializeDb()
+	{
+		var meetups = await _mediator.Send(new GetAllMeetupsQuery());
+
+		var steps = meetups.ValueOrDefault.SelectMany(e => e.PlanSteps);
+
+		for (var i = steps.Count(); i < 4; i++)
+		{
+			await Create();
+		}
 	}
 }

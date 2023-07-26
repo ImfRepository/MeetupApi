@@ -25,6 +25,7 @@ public class PlaceRequestsTest
 
 		_mediator = provider.GetService<IMediator>()
 		            ?? throw new NullReferenceException();
+		InitializeDb().Wait();
 	}
 
 	[Fact]
@@ -83,5 +84,15 @@ public class PlaceRequestsTest
 		var result = await _mediator.Send(new DeletePlaceCommand(id));
 
 		Assert.True(result.IsSuccess);
+	}
+
+	private async Task InitializeDb()
+	{
+		var places = await _mediator.Send(new GetAllPlacesQuery());
+
+		for (var i = places.ValueOrDefault.Count(); i < 4; i++)
+		{
+			await Create();
+		}
 	}
 }

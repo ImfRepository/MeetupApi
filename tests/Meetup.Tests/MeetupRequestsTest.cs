@@ -27,6 +27,8 @@ public class MeetupRequestsTest
 
 		_mediator = provider.GetService<IMediator>() 
 		            ?? throw new NullReferenceException();
+
+		InitializeDb().Wait();
 	}
 
 	[Fact]
@@ -52,7 +54,7 @@ public class MeetupRequestsTest
 	[Fact]
 	public async Task Create()
 	{
-		var time = DateTime.Now;
+		var time = DateTime.Now.ToUniversalTime();
 
 		var orgId = await GetAnyOrganizerId();
 
@@ -86,7 +88,7 @@ public class MeetupRequestsTest
 			Description = meetup.Description,
 			OrganizerId = await GetAnyOrganizerId(),
 			PlaceId = await GetAnyPlaceId(),
-			Time = DateTime.Now,
+			Time = DateTime.Now.ToUniversalTime(),
 			Speaker = "not me"
 		};
 
@@ -120,6 +122,16 @@ public class MeetupRequestsTest
 			.ValueOrDefault
 			.FirstOrDefault(e => e.Name != "me")!
 			.Id;
+	}
+
+	private async Task InitializeDb()
+	{
+		var meetups = await _mediator.Send(new GetAllMeetupsQuery());
+
+		for (var i = meetups.ValueOrDefault.Count(); i < 4; i++)
+		{
+			await Create();
+		}
 	}
 }
 

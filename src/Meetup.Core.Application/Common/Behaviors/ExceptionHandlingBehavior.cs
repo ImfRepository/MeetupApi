@@ -16,10 +16,9 @@ public class ExceptionHandlingBehavior<TRequest, TResponse> : IPipelineBehavior<
         {
             Console.WriteLine(ex);
 
-            var response = new TResponse()
-            {
-                Errors = { new ExceptionalError(ex) }
-            };
+            var response = new TResponse();
+
+            response.Reasons.Add(new ExceptionalError(ex));
 
             return response;
         }

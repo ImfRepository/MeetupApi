@@ -25,6 +25,7 @@ public class OrganizerRequestsTest
 
 		_mediator = provider.GetService<IMediator>()
 					?? throw new NullReferenceException();
+		InitializeDb().Wait();
 	}
 
 	[Fact]
@@ -85,5 +86,15 @@ public class OrganizerRequestsTest
 		var result = await _mediator.Send(new DeleteOrganizerCommand(id));
 
 		Assert.True(result.IsSuccess);
+	}
+
+	private async Task InitializeDb()
+	{
+		var organizers = await _mediator.Send(new GetAllOrganizersQuery());
+
+		for (var i = organizers.ValueOrDefault.Count(); i < 4; i++)
+		{
+			await Create();
+		}
 	}
 }
