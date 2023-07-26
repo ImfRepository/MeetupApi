@@ -1,10 +1,8 @@
-﻿using Meetup.Core.Application.Common.Interfaces;
-
-namespace Meetup.Core.Application.Data.Meetups.Commands.DeleteMeetup;
+﻿namespace Meetup.Core.Application.Data.Meetups.Commands.DeleteMeetup;
 
 public record DeleteMeetupCommand(int Id) : IRequest<Result>;
 
-public class DeleteMeetupCommandHandler :
+internal class DeleteMeetupCommandHandler :
     IRequestHandler<DeleteMeetupCommand, Result>
 {
     private readonly IApplicationDbContext _context;

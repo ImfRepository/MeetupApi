@@ -2,7 +2,7 @@
 
 namespace Meetup.Core.Application.Data.PlanSteps.Commands.CreatePlanStep;
 
-public class CreatePlanStepCommandValidator : AbstractValidator<CreatePlanStepCommand>
+internal class CreatePlanStepCommandValidator : AbstractValidator<CreatePlanStepCommand>
 {
     public CreatePlanStepCommandValidator()
     {

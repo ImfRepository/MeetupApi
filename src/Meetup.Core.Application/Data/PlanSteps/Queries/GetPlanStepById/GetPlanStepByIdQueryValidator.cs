@@ -1,6 +1,6 @@
 ﻿namespace Meetup.Core.Application.Data.PlanSteps.Queries.GetPlanStepById;
 
-public class GetPlanStepByIdQueryValidator : AbstractValidator<GetPlanStepByIdQuery>
+internal class GetPlanStepByIdQueryValidator : AbstractValidator<GetPlanStepByIdQuery>
 {
     public GetPlanStepByIdQueryValidator()
     {

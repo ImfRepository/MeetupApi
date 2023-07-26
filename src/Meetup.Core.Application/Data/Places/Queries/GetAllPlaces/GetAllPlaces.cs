@@ -1,11 +1,10 @@
-﻿using Meetup.Core.Application.Common.Interfaces;
-using Meetup.Core.Domain.Entities;
+﻿using Meetup.Core.Domain.Entities;
 
 namespace Meetup.Core.Application.Data.Places.Queries.GetAllPlaces;
 
 public record GetAllPlacesQuery : IRequest<Result<IEnumerable<PlaceEntity>>>;
 
-public class GetAllPlacesQueryHandler
+internal class GetAllPlacesQueryHandler
     : IRequestHandler<GetAllPlacesQuery, Result<IEnumerable<PlaceEntity>>>
 {
     private readonly IApplicationDbContext _context;

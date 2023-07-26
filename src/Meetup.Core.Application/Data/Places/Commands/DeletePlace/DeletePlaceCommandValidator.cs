@@ -1,6 +1,6 @@
 ﻿namespace Meetup.Core.Application.Data.Places.Commands.DeletePlace;
 
-public class DeletePlaceCommandValidator : AbstractValidator<DeletePlaceCommand>
+internal class DeletePlaceCommandValidator : AbstractValidator<DeletePlaceCommand>
 {
     public DeletePlaceCommandValidator()
     {

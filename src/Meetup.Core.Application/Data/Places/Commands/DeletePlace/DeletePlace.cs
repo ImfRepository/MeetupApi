@@ -1,10 +1,8 @@
-﻿using Meetup.Core.Application.Common.Interfaces;
-
-namespace Meetup.Core.Application.Data.Places.Commands.DeletePlace;
+﻿namespace Meetup.Core.Application.Data.Places.Commands.DeletePlace;
 
 public record DeletePlaceCommand(int Id) : IRequest<Result>;
 
-public class DeletePlaceCommandHandler : IRequestHandler<DeletePlaceCommand, Result>
+internal class DeletePlaceCommandHandler : IRequestHandler<DeletePlaceCommand, Result>
 {
     private readonly IApplicationDbContext _context;
 

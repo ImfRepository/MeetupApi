@@ -1,5 +1,4 @@
-﻿using Meetup.Core.Application.Common.Interfaces;
-using Meetup.Core.Domain.Entities;
+﻿using Meetup.Core.Domain.Entities;
 
 namespace Meetup.Core.Application.Data.PlanSteps.Commands.CreatePlanStep;
 
@@ -12,7 +11,7 @@ public record CreatePlanStepCommand : IRequest<Result<int>>
     public string Name { get; init; } = string.Empty;
 }
 
-public class CreatePlanStepCommandHandler : IRequestHandler<CreatePlanStepCommand, Result<int>>
+internal class CreatePlanStepCommandHandler : IRequestHandler<CreatePlanStepCommand, Result<int>>
 {
     private readonly IApplicationDbContext _context;
 

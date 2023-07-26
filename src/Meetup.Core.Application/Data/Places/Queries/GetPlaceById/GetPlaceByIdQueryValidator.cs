@@ -1,6 +1,6 @@
 ﻿namespace Meetup.Core.Application.Data.Places.Queries.GetPlaceById;
 
-public class GetPlaceByIdQueryValidator : AbstractValidator<GetPlaceByIdQuery>
+internal class GetPlaceByIdQueryValidator : AbstractValidator<GetPlaceByIdQuery>
 {
     public GetPlaceByIdQueryValidator()
     {

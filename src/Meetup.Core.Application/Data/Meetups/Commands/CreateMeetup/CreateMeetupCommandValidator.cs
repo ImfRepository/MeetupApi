@@ -2,7 +2,7 @@
 
 namespace Meetup.Core.Application.Data.Meetups.Commands.CreateMeetup;
 
-public class CreateMeetupCommandValidator : AbstractValidator<CreateMeetupCommand>
+internal class CreateMeetupCommandValidator : AbstractValidator<CreateMeetupCommand>
 {
     public CreateMeetupCommandValidator()
     {

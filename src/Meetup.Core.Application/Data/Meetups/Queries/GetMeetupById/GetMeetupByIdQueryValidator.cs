@@ -1,6 +1,6 @@
 ﻿namespace Meetup.Core.Application.Data.Meetups.Queries.GetMeetupById;
 
-public class GetMeetupByIdQueryValidator : AbstractValidator<GetMeetupByIdQuery>
+internal class GetMeetupByIdQueryValidator : AbstractValidator<GetMeetupByIdQuery>
 {
     public GetMeetupByIdQueryValidator()
     {

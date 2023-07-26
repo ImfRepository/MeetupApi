@@ -2,7 +2,7 @@
 
 namespace Meetup.Core.Application.Data.Places.Commands.UpdatePlace;
 
-public class UpdatePlaceCommandValidator : AbstractValidator<UpdatePlaceCommand>
+internal class UpdatePlaceCommandValidator : AbstractValidator<UpdatePlaceCommand>
 {
     public UpdatePlaceCommandValidator()
     {

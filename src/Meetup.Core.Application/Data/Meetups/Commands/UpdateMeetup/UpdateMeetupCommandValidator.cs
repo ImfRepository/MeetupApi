@@ -2,7 +2,7 @@
 
 namespace Meetup.Core.Application.Data.Meetups.Commands.UpdateMeetup;
 
-public class UpdateMeetupCommandValidator : AbstractValidator<UpdateMeetupCommand>
+internal class UpdateMeetupCommandValidator : AbstractValidator<UpdateMeetupCommand>
 {
     public UpdateMeetupCommandValidator()
     {

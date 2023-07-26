@@ -1,11 +1,10 @@
-﻿using Meetup.Core.Application.Common.Interfaces;
-using Meetup.Core.Domain.Entities;
+﻿using Meetup.Core.Domain.Entities;
 
 namespace Meetup.Core.Application.Data.Places.Commands.CreatePlace;
 
 public record CreatePlaceCommand(string Name) : IRequest<Result<int>>;
 
-public class CreatePlaceCommandHandler : IRequestHandler<CreatePlaceCommand, Result<int>>
+internal class CreatePlaceCommandHandler : IRequestHandler<CreatePlaceCommand, Result<int>>
 {
     private readonly IApplicationDbContext _context;
 

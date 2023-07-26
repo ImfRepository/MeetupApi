@@ -1,6 +1,4 @@
-﻿using Meetup.Core.Application.Common.Interfaces;
-
-namespace Meetup.Core.Application.Data.Places.Commands.UpdatePlace;
+﻿namespace Meetup.Core.Application.Data.Places.Commands.UpdatePlace;
 
 public record UpdatePlaceCommand : IRequest<Result>
 {
@@ -9,7 +7,7 @@ public record UpdatePlaceCommand : IRequest<Result>
     public string Name { get; init; } = null!;
 }
 
-public class UpdatePlaceCommandHandler : IRequestHandler<UpdatePlaceCommand, Result>
+internal class UpdatePlaceCommandHandler : IRequestHandler<UpdatePlaceCommand, Result>
 {
     private readonly IApplicationDbContext _context;
 

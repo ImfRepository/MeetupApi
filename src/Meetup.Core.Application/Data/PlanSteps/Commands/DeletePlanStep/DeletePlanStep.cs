@@ -1,6 +1,4 @@
-﻿using Meetup.Core.Application.Common.Interfaces;
-
-namespace Meetup.Core.Application.Data.PlanSteps.Commands.DeletePlanStep;
+﻿namespace Meetup.Core.Application.Data.PlanSteps.Commands.DeletePlanStep;
 
 public record DeletePlanStepCommand(int Id) : IRequest<Result>;
 

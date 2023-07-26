@@ -67,12 +67,7 @@ public static class ResultExtensions
 
 	private static IActionResult InternalErrorResult()
 	{
-		var response = new BadResponse()
-		{
-			Status = "Internal error"
-		};
-
-		return new BadRequestObjectResult(response);
+		return new StatusCodeResult(500);
 	}
 
 	private static IActionResult ErrorResult(IResultBase result)

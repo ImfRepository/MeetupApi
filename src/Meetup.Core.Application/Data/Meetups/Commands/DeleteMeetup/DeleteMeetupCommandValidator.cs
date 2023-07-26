@@ -1,6 +1,6 @@
 ﻿namespace Meetup.Core.Application.Data.Meetups.Commands.DeleteMeetup;
 
-public class DeleteMeetupCommandValidator : AbstractValidator<DeleteMeetupCommand>
+internal class DeleteMeetupCommandValidator : AbstractValidator<DeleteMeetupCommand>
 {
     public DeleteMeetupCommandValidator()
     {

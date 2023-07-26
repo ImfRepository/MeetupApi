@@ -2,7 +2,7 @@
 
 namespace Meetup.Core.Application.Data.Places.Commands.CreatePlace;
 
-public class CreatePlaceCommandValidator : AbstractValidator<CreatePlaceCommand>
+internal class CreatePlaceCommandValidator : AbstractValidator<CreatePlaceCommand>
 {
     public CreatePlaceCommandValidator()
     {
