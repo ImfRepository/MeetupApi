@@ -101,7 +101,7 @@ public class MeetupRequestsTest
 	public async Task Delete()
 	{
 		var id = (await _mediator.Send(new GetAllMeetupsQuery()))
-			.ValueOrDefault.FirstOrDefault()!.Id;
+			.ValueOrDefault.LastOrDefault()!.Id;
 
 		var result = await _mediator.Send(new DeleteMeetupCommand(id));
 
@@ -110,25 +110,31 @@ public class MeetupRequestsTest
 
 	public async Task<int> GetAnyOrganizerId()
 	{
-		return (await _mediator.Send(new GetAllOrganizersQuery()))
+		var organizer = (await _mediator.Send(new GetAllOrganizersQuery()))
 			.ValueOrDefault
-			.FirstOrDefault(e => e.Name != "me")!
-			.Id;
+			.ToArray();
+
+		var max = organizer.Length;
+
+		return organizer[Random.Shared.Next(max)].Id;
 	}
 
 	public async Task<int> GetAnyPlaceId()
 	{
-		return (await _mediator.Send(new GetAllPlacesQuery()))
+		var places = (await _mediator.Send(new GetAllPlacesQuery()))
 			.ValueOrDefault
-			.FirstOrDefault(e => e.Name != "me")!
-			.Id;
+			.ToArray();
+
+		var max = places.Length;
+
+		return places[Random.Shared.Next(max)].Id;
 	}
 
 	private async Task InitializeDb()
 	{
 		var meetups = await _mediator.Send(new GetAllMeetupsQuery());
 
-		for (var i = meetups.ValueOrDefault.Count(); i < 4; i++)
+		for (var i = meetups.ValueOrDefault?.Count() ?? 0; i < 4; i++)
 		{
 			await Create();
 		}

@@ -90,7 +90,7 @@ public class PlaceRequestsTest
 	{
 		var places = await _mediator.Send(new GetAllPlacesQuery());
 
-		for (var i = places.ValueOrDefault.Count(); i < 4; i++)
+		for (var i = places.ValueOrDefault?.Count() ?? 0; i < 4; i++)
 		{
 			await Create();
 		}

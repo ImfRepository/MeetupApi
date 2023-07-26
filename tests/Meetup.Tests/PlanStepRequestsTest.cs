@@ -61,7 +61,7 @@ public class PlanStepRequestsTest
 		{
 			MeetupId = id,
 			Name = "First step",
-			Time = DateTime.Now
+			Time = DateTime.Now.ToUniversalTime()
 		};
 
 		var result = await _mediator.Send(command);
@@ -78,7 +78,7 @@ public class PlanStepRequestsTest
 		{
 			Id = id,
 			Name = "Second step",
-			Time = DateTime.Now
+			Time = DateTime.Now.ToUniversalTime()
 		};
 
 		var result = await _mediator.Send(command);

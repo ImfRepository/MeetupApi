@@ -92,7 +92,7 @@ public class OrganizerRequestsTest
 	{
 		var organizers = await _mediator.Send(new GetAllOrganizersQuery());
 
-		for (var i = organizers.ValueOrDefault.Count(); i < 4; i++)
+		for (var i = organizers.ValueOrDefault?.Count() ?? 0; i < 4; i++)
 		{
 			await Create();
 		}
