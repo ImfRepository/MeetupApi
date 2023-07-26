@@ -1,8 +1,8 @@
 ﻿using static Meetup.Core.Application.Common.Validation.ValidationConstants;
 
-namespace Meetup.Core.Application.Data.Organizer.Commands.UpdateOrganizer;
+namespace Meetup.Core.Application.Data.Organizers.Commands.UpdateOrganizer;
 
-public class UpdateOrganizerCommandValidator : AbstractValidator<UpdateOrganizerCommand>
+internal class UpdateOrganizerCommandValidator : AbstractValidator<UpdateOrganizerCommand>
 {
     public UpdateOrganizerCommandValidator()
     {

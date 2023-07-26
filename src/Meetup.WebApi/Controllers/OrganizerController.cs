@@ -1,9 +1,9 @@
 ﻿using MediatR;
-using Meetup.Core.Application.Data.Organizer.Commands.CreateOrganizer;
-using Meetup.Core.Application.Data.Organizer.Commands.DeleteOrganizer;
-using Meetup.Core.Application.Data.Organizer.Commands.UpdateOrganizer;
-using Meetup.Core.Application.Data.Organizer.Queries.GetAllOrganizers;
-using Meetup.Core.Application.Data.Organizer.Queries.GetOrganizerById;
+using Meetup.Core.Application.Data.Organizers.Commands.DeleteOrganizer;
+using Meetup.Core.Application.Data.Organizers.Commands.UpdateOrganizer;
+using Meetup.Core.Application.Data.Organizers.Queries.GetAllOrganizers;
+using Meetup.Core.Application.Data.Organizers.Queries.GetOrganizerById;
+using Meetup.Core.Application.Data.Organizers.Commands.CreateOrganizer;
 using Meetup.WebApi.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

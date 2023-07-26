@@ -1,6 +1,4 @@
-﻿using Meetup.Core.Application.Common.Interfaces;
-
-namespace Meetup.Core.Application.Data.Organizer.Commands.UpdateOrganizer;
+﻿namespace Meetup.Core.Application.Data.Organizers.Commands.UpdateOrganizer;
 
 public record UpdateOrganizerCommand : IRequest<Result>
 {
@@ -9,7 +7,7 @@ public record UpdateOrganizerCommand : IRequest<Result>
     public string Name { get; init; } = null!;
 }
 
-public class UpdateOrganizerCommandHandler : IRequestHandler<UpdateOrganizerCommand, Result>
+internal class UpdateOrganizerCommandHandler : IRequestHandler<UpdateOrganizerCommand, Result>
 {
     private readonly IApplicationDbContext _context;
 

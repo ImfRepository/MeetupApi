@@ -1,10 +1,8 @@
-﻿using Meetup.Core.Application.Common.Interfaces;
-
-namespace Meetup.Core.Application.Data.Organizer.Commands.DeleteOrganizer;
+﻿namespace Meetup.Core.Application.Data.Organizers.Commands.DeleteOrganizer;
 
 public record DeleteOrganizerCommand(int Id) : IRequest<Result>;
 
-public class DeleteOrganizerCommandHandler : IRequestHandler<DeleteOrganizerCommand, Result>
+internal class DeleteOrganizerCommandHandler : IRequestHandler<DeleteOrganizerCommand, Result>
 {
     private readonly IApplicationDbContext _context;
 

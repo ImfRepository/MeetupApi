@@ -1,11 +1,10 @@
-﻿using Meetup.Core.Application.Common.Interfaces;
-using Meetup.Core.Domain.Entities;
+﻿using Meetup.Core.Domain.Entities;
 
-namespace Meetup.Core.Application.Data.Organizer.Queries.GetAllOrganizers;
+namespace Meetup.Core.Application.Data.Organizers.Queries.GetAllOrganizers;
 
 public record GetAllOrganizersQuery() : IRequest<Result<IEnumerable<OrganizerEntity>>>;
 
-public class GetAllOrganizersQueryHandler
+internal class GetAllOrganizersQueryHandler
     : IRequestHandler<GetAllOrganizersQuery, Result<IEnumerable<OrganizerEntity>>>
 {
     private readonly IApplicationDbContext _context;

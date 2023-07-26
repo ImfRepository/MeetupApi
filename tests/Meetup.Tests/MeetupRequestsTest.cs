@@ -5,7 +5,7 @@ using Meetup.Core.Application.Data.Meetups.Commands.DeleteMeetup;
 using Meetup.Core.Application.Data.Meetups.Commands.UpdateMeetup;
 using Meetup.Core.Application.Data.Meetups.Queries.GetAllMeetups;
 using Meetup.Core.Application.Data.Meetups.Queries.GetMeetupById;
-using Meetup.Core.Application.Data.Organizer.Queries.GetAllOrganizers;
+using Meetup.Core.Application.Data.Organizers.Queries.GetAllOrganizers;
 using Meetup.Core.Application.Data.Places.Queries.GetAllPlaces;
 
 namespace Meetup.Tests;

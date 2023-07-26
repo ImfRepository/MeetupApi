@@ -1,11 +1,10 @@
-﻿using Meetup.Core.Application.Common.Interfaces;
-using Meetup.Core.Domain.Entities;
+﻿using Meetup.Core.Domain.Entities;
 
-namespace Meetup.Core.Application.Data.Organizer.Commands.CreateOrganizer;
+namespace Meetup.Core.Application.Data.Organizers.Commands.CreateOrganizer;
 
 public record CreateOrganizerCommand(string Name) : IRequest<Result<int>>;
 
-public class CreateOrganizerCommandHandler : IRequestHandler<CreateOrganizerCommand, Result<int>>
+internal class CreateOrganizerCommandHandler : IRequestHandler<CreateOrganizerCommand, Result<int>>
 {
     private readonly IApplicationDbContext _context;
 

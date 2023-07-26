@@ -1,10 +1,10 @@
 ﻿using Meetup.Core.Domain.Entities;
 
-namespace Meetup.Core.Application.Data.Organizer.Queries.GetOrganizerById;
+namespace Meetup.Core.Application.Data.Organizers.Queries.GetOrganizerById;
 
 public record GetOrganizerByIdQuery(int Id) : IRequest<Result<OrganizerEntity>>;
 
-public class GetOrganizerByIdQueryHandler : IRequestHandler<GetOrganizerByIdQuery, Result<OrganizerEntity>>
+internal class GetOrganizerByIdQueryHandler : IRequestHandler<GetOrganizerByIdQuery, Result<OrganizerEntity>>
 {
     private readonly IApplicationDbContext _context;
 
