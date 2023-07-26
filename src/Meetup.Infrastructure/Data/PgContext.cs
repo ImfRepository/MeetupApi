@@ -1,63 +1,26 @@
-﻿using Meetup.Infrastructure.Data.Models;
+﻿using System.Reflection;
+using Meetup.Core.Application.Common.Interfaces;
+using Meetup.Core.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Meetup.Infrastructure.Data;
 
-internal class PgContext : DbContext
+internal class PgContext : DbContext, IApplicationDbContext
 {
-    public PgContext(DbContextOptions<PgContext> opt) : base(opt)
-    { }
+    public PgContext(DbContextOptions<PgContext> opt) : base(opt) { }
 
-    public DbSet<MeetupDto> Meetups { get; set; }
-    public DbSet<PlaceDto> Places { get; set; }
-    public DbSet<PlanStepDto> PlanSteps { get; set; }
-    public DbSet<OrganizerDto> Organizers { get; set; }
+    public DbSet<MeetupEntity> Meetups => Set<MeetupEntity>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public DbSet<PlaceEntity> Places => Set<PlaceEntity>();
+
+    public DbSet<PlanStepEntity> PlanSteps => Set<PlanStepEntity>();
+
+    public DbSet<OrganizerEntity> Organizers => Set<OrganizerEntity>();
+
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        modelBuilder.Entity<MeetupDto>(e =>
-        {
-            e.ToTable("meetups")
-                .Property(p => p.Id)
-                .UseIdentityAlwaysColumn();
+	    builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
-		});
-
-        modelBuilder.Entity<OrganizerDto>(e =>
-        {
-	        e.Property(p => p.Id)
-		        .UseIdentityAlwaysColumn();
-
-			e.ToTable("organizers")
-				.HasMany(o => o.Meetups)
-				.WithOne(m => m.OrganizerDto)
-				.HasForeignKey(m => m.OrganizerId)
-				.HasPrincipalKey(o => o.Id);
-
-		});
-
-        modelBuilder.Entity<PlaceDto>(e =>
-        {
-			e.Property(p => p.Id)
-				.UseIdentityAlwaysColumn();
-
-			e.ToTable("places")
-				.HasMany(p => p.Meetups)
-				.WithOne(m => m.PlaceDto)
-				.HasForeignKey(m => m.PlaceId)
-				.HasPrincipalKey(p => p.Id);
-		});
-
-        modelBuilder.Entity<PlanStepDto>(e =>
-        {
-	        e.Property(p => p.Id)
-		        .UseIdentityAlwaysColumn();
-
-			e.ToTable("plan_steps")
-				.HasOne(p => p.Meetup)
-				.WithMany(m => m.PlanSteps)
-				.HasForeignKey(p => p.MeetupId)
-				.HasPrincipalKey(m => m.Id);
-		});
-    }
+	    base.OnModelCreating(builder);
+	  }
 }

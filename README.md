@@ -45,7 +45,8 @@ Now, here is a plan how to quick start:
 }
 ```
 - if u want to run unit tests, add user to Tests project.
-- run WebApi or Tests
+- Run
+
 
 ### Used
 - [Microsoft tutorials](https://learn.microsoft.com/ru-ru/)

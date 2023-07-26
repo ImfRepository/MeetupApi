@@ -1,8 +1,11 @@
-using Meetup.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Meetup.Core.Application;
 using Microsoft.OpenApi.Models;
+using Meetup.Infrastructure;
+using Newtonsoft.Json;
+
 
 try
 {
@@ -12,6 +15,8 @@ try
 
 	// Add services to the container.
 	builder.Services.AddInfrastructure(config);
+	builder.Services.AddApplicationServices();
+
 
 	builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,opt =>
@@ -32,8 +37,13 @@ try
 			};
 		});
 
-	builder.Services.AddControllers();
+
+	builder.Services.AddControllers()
+		.AddNewtonsoftJson(opt =>
+			opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore);
+
 	builder.Services.AddEndpointsApiExplorer();
+
 	builder.Services.AddSwaggerGen(opt =>
 	{
 		opt.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
