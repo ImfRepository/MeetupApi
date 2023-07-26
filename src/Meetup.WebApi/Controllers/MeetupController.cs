@@ -22,7 +22,7 @@ public class MeetupController : ControllerBase
 	}
 
 	[HttpGet]
-	//[Authorize]
+	[Authorize]
 	public async Task<IActionResult> Get(CancellationToken cancellationToken)
 	{
 		var response = await _mediator.Send(new GetAllMeetupsQuery(), cancellationToken);
@@ -31,7 +31,7 @@ public class MeetupController : ControllerBase
 	}
 
 	[HttpGet("{id:int}")]
-	//[Authorize]
+	[Authorize]
 	public async Task<IActionResult> Get([FromRoute] int id, CancellationToken cancellationToken)
 	{
 		var response = await _mediator.Send(new GetMeetupByIdQuery(id), cancellationToken);

@@ -2,9 +2,9 @@
 
 namespace Meetup.Core.Application.Data.PlanSteps.Commands.DeletePlanStep;
 
-public record DeletePlanStepCommand(int Id) : IRequest<Result<bool>>;
+public record DeletePlanStepCommand(int Id) : IRequest<Result>;
 
-public class DeletePlanStepCommandHandler : IRequestHandler<DeletePlanStepCommand, Result<bool>>
+internal class DeletePlanStepCommandHandler : IRequestHandler<DeletePlanStepCommand, Result>
 {
     private readonly IApplicationDbContext _context;
 
@@ -13,7 +13,7 @@ public class DeletePlanStepCommandHandler : IRequestHandler<DeletePlanStepComman
         _context = context;
     }
 
-    public async Task<Result<bool>> Handle(DeletePlanStepCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeletePlanStepCommand request, CancellationToken cancellationToken)
     {
         var step = await _context.PlanSteps
             .FirstOrDefaultAsync(e => e.Id == request.Id, cancellationToken);
@@ -26,6 +26,6 @@ public class DeletePlanStepCommandHandler : IRequestHandler<DeletePlanStepComman
         _context.PlanSteps.Remove(step);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return true;
+        return Result.Ok();
     }
 }

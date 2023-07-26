@@ -1,7 +1,7 @@
 ﻿using FluentResults;
 using Meetup.Core.Application.Common.Extensions;
 using Meetup.Core.Domain.Errors;
-using Meetup.WebApi.Controllers;
+using Meetup.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Meetup.WebApi.Extensions;
@@ -43,28 +43,17 @@ public static class ResultExtensions
 
 	private static IActionResult SuccessValuedResult<T>(IResult<T> result)
 	{
-		var response = new ValuedResponseDto<T>()
-		{
-			Status = "Success",
-			Value = result.ValueOrDefault
-		};
-
-		return new OkObjectResult(response);
+		return new OkObjectResult(result.ValueOrDefault);
 	}
 
 	private static IActionResult SuccessResult()
 	{
-		var response = new ResponseDto
-		{
-			Status = "Success"
-		};
-
-		return new OkObjectResult(response);
+		return new OkResult();
 	}
 
 	private static IActionResult InvalidResult(IResultBase result)
 	{
-		var response = new ResponseDto()
+		var response = new BadResponse()
 		{
 			Status = "Invalid",
 			Errors = result.Errors
@@ -73,22 +62,22 @@ public static class ResultExtensions
 				.ToList()
 		};
 
-		return new OkObjectResult(response);
+		return new BadRequestObjectResult(response);
 	}
 
 	private static IActionResult InternalErrorResult()
 	{
-		var response = new ResponseDto()
+		var response = new BadResponse()
 		{
 			Status = "Internal error"
 		};
 
-		return new OkObjectResult(response);
+		return new BadRequestObjectResult(response);
 	}
 
 	private static IActionResult ErrorResult(IResultBase result)
 	{
-		var response = new ResponseDto()
+		var response = new BadResponse()
 		{
 			Status = "Error",
 			Errors = result.Errors
@@ -97,6 +86,6 @@ public static class ResultExtensions
 				.ToList()
 		};
 
-		return new OkObjectResult(response);
+		return new BadRequestObjectResult(response);
 	}
 }

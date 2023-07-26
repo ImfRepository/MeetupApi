@@ -23,9 +23,9 @@ public class PlanStepController : ControllerBase
 
 	[HttpGet]
 	[Authorize]
-	public async Task<IActionResult> Get([FromBody]GetAllPlanStepsQuery query, CancellationToken cancellationToken)
+	public async Task<IActionResult> GetAll([FromQuery] int meetupId, CancellationToken cancellationToken)
 	{
-		var response = await _mediator.Send(query, cancellationToken);
+		var response = await _mediator.Send(new GetAllPlanStepsQuery(meetupId), cancellationToken);
 
 		return response.ToActionResult();
 	}
