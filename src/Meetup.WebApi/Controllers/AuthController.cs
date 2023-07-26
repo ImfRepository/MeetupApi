@@ -1,9 +1,10 @@
 ﻿using Meetup.Core.Application.Common.Interfaces;
+using Meetup.WebApi.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Meetup.WebApi.Controllers
 {
-    [Route("api/[controller]")]
+	[Route("api/[controller]")]
 	[ApiController]
 	public class AuthController : ControllerBase
 	{
@@ -20,25 +21,9 @@ namespace Meetup.WebApi.Controllers
 		[HttpGet]
 		public IActionResult GetToken([FromQuery] bool isAdmin)
 		{
-			try
-			{
-				var token = _tokenService.GetToken(_config, isAdmin);
+			var result = _tokenService.GetToken(_config, isAdmin);
 
-				if (token == string.Empty)
-					return BadRequest();
-
-				var response = new
-				{
-					Authorization = "Bearer " + token
-				};
-				return Ok(response);
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine(ex);
-				return BadRequest();
-			}
-
+			return result.ToActionResult();
 		}
 	}
 }

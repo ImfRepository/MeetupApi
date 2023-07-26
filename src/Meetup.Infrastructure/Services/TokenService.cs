@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using FluentResults;
 using Meetup.Core.Application.Common.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -9,12 +10,14 @@ namespace Meetup.Infrastructure.Services;
 
 internal class TokenService : ITokenService
 {
-	public string GetToken(IConfiguration config, bool isAdmin)
+	public Result<string> GetToken(IConfiguration config, bool isAdmin)
 	{
 		try
 		{
 			var now = DateTime.UtcNow;
+			
 			var random = new Random();
+
 			var claims = new List<Claim>
 			{
 				new("name", ((char)('a' + random.Next(20))).ToString()),
@@ -30,12 +33,12 @@ internal class TokenService : ITokenService
 						Encoding.ASCII.GetBytes(config["JWT:Key"] ?? throw new NullReferenceException("JWT:Key"))),
 					SecurityAlgorithms.HmacSha256));
 
-			return new JwtSecurityTokenHandler().WriteToken(jwt);
+			return "Bearer " + new JwtSecurityTokenHandler().WriteToken(jwt);
 		}
 		catch (Exception ex)
 		{
 			Console.WriteLine(ex);
-			return string.Empty;
+			return Result.Fail(new ExceptionalError(ex));
 		}
 	}
 }

@@ -4,5 +4,5 @@ namespace Meetup.Core.Application.Common.Interfaces;
 
 public interface ITokenService
 {
-    public string GetToken(IConfiguration config, bool isAdmin);
+    public Result<string> GetToken(IConfiguration config, bool isAdmin);
 }
