@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 using Meetup.Infrastructure;
 using Newtonsoft.Json;
 
+
 try
 {
 	var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,7 @@ try
 	// Add services to the container.
 	builder.Services.AddInfrastructure(config);
 	builder.Services.AddApplicationServices();
+
 
 	builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 		.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme,opt =>
@@ -34,6 +36,7 @@ try
 				ValidateIssuerSigningKey = true,
 			};
 		});
+
 
 	builder.Services.AddControllers()
 		.AddNewtonsoftJson(opt =>

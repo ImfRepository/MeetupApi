@@ -22,5 +22,5 @@ internal class PgContext : DbContext, IApplicationDbContext
 	    builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
 	    base.OnModelCreating(builder);
-	}
+	  }
 }
