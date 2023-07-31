@@ -10,7 +10,7 @@ public static class ConfigureServices
 	public static IServiceCollection AddApplicationServices(this IServiceCollection services)
 	{
 		var assembly = Assembly.GetExecutingAssembly();
-		services.AddValidatorsFromAssembly(assembly);
+		services.AddValidatorsFromAssembly(assembly, includeInternalTypes: true);
 		ValidatorOptions.Global.LanguageManager.Culture = new CultureInfo("en");
 
 		services.AddMediatR(cfg =>
