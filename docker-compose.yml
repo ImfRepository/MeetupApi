@@ -1,0 +1,39 @@
+version: '3.4'
+
+services:
+  meetup.webapi:
+    container_name: meetup.webapi
+    image: ${DOCKER_REGISTRY-}meetupwebapi
+    environment:
+      - ConnectionStrings:PgContext="Host=meetup.db;Port=5432;Database=postgres;Username=postgres;Password=postgres"
+    build:
+      context: .
+      dockerfile: src/Meetup.WebApi/Dockerfile
+
+  meetup.db:
+    container_name: meetup.db
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
+      - db-data:/var/lib/postgresql/data
+  
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@pgadmin.com
+      - PGADMIN_DEFAULT_PASSWORD=password
+      - PGADMIN_LISTEN_PORT=5050
+    ports:
+      - "5050:5050"
+    depends_on:
+      - meetup.db
+
+
+volumes:
+  db-data:
+    
