@@ -1,5 +1,7 @@
 # Meetup API
-[Here](Task.pdf) is a task. There is an attempt to realize a kind of clean architecture like [here](https://github.com/jasontaylordev/CleanArchitecture/tree/main).
+Meetup API with CQRS and MediatR. Also practiced in clean architecture like [here](https://github.com/jasontaylordev/CleanArchitecture/tree/main). 
+
+![Task](/Task.png)
 
 ## How to start
 
